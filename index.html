@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas" width='800' height='800' style="border:1px solid red"></canvas>
+<canvas id="canvas2" width='800' height='800' style="border:1px solid red"></canvas>
+<canvas id="canvas3" width='800' height='800' style="border:1px solid red"></canvas>
+<canvas id="canvas4" width='800' height='800' style="border:1px solid red"></canvas>
+</body>
+</html>
+<script>
+    var canvas = document.querySelector('#canvas');
+    var canvas2 = document.querySelector('#canvas2');
+    var canvas3 = document.querySelector('#canvas3');
+    var canvas4 = document.querySelector('#canvas4');
+
+    //构造函数
+    function Chain(opt) {
+        //混入继承
+        for(var key in opt){
+            this[key] = opt[key];
+        }
+
+        this.ctx = this.canvas.getContext('2d');
+
+        //调用初始化方法
+        this.init();
+    }
+    Chain.prototype = {
+        //初始化
+        init: function () {
+            var self = this;
+            var interId = setInterval(function () {
+                self.ctx.clearRect(0,0,self.canvas.width,self.canvas.height);
+                self.ctx.beginPath();
+                self.startRadian += self.step;
+                self.drawBigCircle();
+                self.drawSmallCircles();
+            },30);
+        },
+        //画大圆
+        drawBigCircle:function () {
+            this.ctx.beginPath();
+            this.ctx.arc(this.bigX,this.bigY,this.bigCircleR,0,2*Math.PI);
+            this.ctx.stroke();
+        },
+        //画小圆
+        drawSmallCircles:function () {
+            var ctx = this.ctx;
+
+            //计算小球之间的弧度差
+            var singleRadian = 2 * Math.PI / this.num;
+            for(var i = 0; i < this.num; i++) {
+                var radian = this.startRadian + singleRadian*i;
+                //计算小圆的圆心坐标
+                var h = this.bigCircleR * Math.sin(radian);
+                var b = this.bigCircleR * Math.cos(radian);
+
+                var smallX = this.bigX + b;
+                var smallY = this.bigY + h;
+
+                //绘制小圆
+                ctx.beginPath();
+                ctx.arc(smallX,smallY,this.smallCircleR,0,2*Math.PI);
+                ctx.fillStyle = this.getRadomColor();
+                ctx.fill();
+            }
+        },
+        getRadomColor:function () {
+            return 'rgb('+parseInt(Math.random()*255)+','+parseInt(Math.random()*255)+','+parseInt(Math.random()*255)+')';
+        }
+    };
+
+    var newChain = new Chain({
+        bigX:400,
+        bigY:400,
+        bigCircleR:200,
+        smallCircleR:20,
+        startRadian:Math.PI/6,
+        num:20,
+        step:0.01*Math.PI,
+        canvas:canvas
+    });
+    var newChain1 = new Chain({
+        bigX:400,
+        bigY:400,
+        bigCircleR:150,
+        smallCircleR:15,
+        startRadian:Math.PI/6,
+        num:15,
+        step:-0.01*Math.PI,
+        canvas:canvas2
+    });
+    var newChain2 = new Chain({
+        bigX:400,
+        bigY:400,
+        bigCircleR:100,
+        smallCircleR:12,
+        startRadian:Math.PI/6,
+        num:10,
+        step:0.02*Math.PI,
+        canvas:canvas3
+    });
+    var newChain3 = new Chain({
+        bigX:400,
+        bigY:400,
+        bigCircleR:50,
+        smallCircleR:10,
+        startRadian:Math.PI/6,
+        num:6,
+        step:-0.05*Math.PI,
+        canvas:canvas4
+    });
+</script>
